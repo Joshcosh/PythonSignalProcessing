@@ -16,7 +16,12 @@ Fs, reference = wf.read('./audio/ref_samples.wav')
 reference = np.double(reference) * normalizationFactor
 reference = reference[0:reference.size - 1]
 
-h = sig.firwin(256, 0.5)
+Fs, section = wf.read('./audio/section2.wav')
+section = np.double(section) * normalizationFactor
+section = section[0:section.size - 1]
+
+
+h = sig.firwin(256, 0.175)
 f, H = sig.freqz(h, 1, 1000, fs=16000)
 plt.plot(f, 20*np.log10(np.abs(H)))
 
@@ -45,6 +50,20 @@ plt.savefig('./graphs/fft filtering of reference with fir filter')
 
 y = y/normalizationFactor
 y = np.int16(y)
+
+
+indexOfHighestCorrelation = np.argmax(np.correlate(y, section))
+
+MinuteOfHighestCorrelation = np.floor((indexOfHighestCorrelation / np.double(Fs)) / 60.0)
+SecondOfHighestCorrelation = (indexOfHighestCorrelation / np.double(Fs)) % 60.0
+
+startIndex = indexOfHighestCorrelation
+endIndex = startIndex + section.size
+
+sectionInReference = y[startIndex:endIndex]
+
+wf.write('./audioout/section2InReference.wav', Fs, sectionInReference)
+
 
 wf.write('./audioout/filteredReference.wav', Fs, y)
 
