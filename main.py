@@ -21,7 +21,7 @@ section = np.double(section) * normalizationFactor
 section = section[0:section.size - 1]
 
 
-h = sig.firwin(256, 0.175)
+h = sig.firwin(255, 0.1, pass_zero=False)
 f, H = sig.freqz(h, 1, 1000, fs=16000)
 plt.plot(f, 20*np.log10(np.abs(H)))
 
