@@ -1,46 +1,41 @@
-import wave
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.fftpack import fft, ifft
-import scipy.signal as signal
 import scipy.signal as sig
-import playground as pg
-import pyaudio as au
-import othermethods as om
+from scipy.fftpack import fft, ifft
+import scipy.io.wavfile as wf
+import wave
 import struct
-import os
+#import sounddevice as sd
 
-Fs = 16000.0
+# add sounddevice later and use the commmand sd.play(data,Fs)
+
 normalizationFactor = 2 ** -15
 
-fid = wave.open('./audio/ref_samples.wav', 'rb')
-reference = np.frombuffer(fid.readframes(-1), np.int16, -1)
-fid.close()
+Fs, reference = wf.read('./audio/ref_samples.wav')
+
 reference = np.double(reference) * normalizationFactor
 
-f, Pwelch_spec = signal.welch(reference, Fs, scaling='spectrum')
 
-plt.semilogy(f, Pwelch_spec)
-plt.xlabel('frequency [Hz]')
-plt.ylabel('PSD')
-plt.grid()
+h = sig.firwin(256, 500, 40, nyq=16000)
+
+# b,a = sig.iirfilter(4,500,0.3,40,'lowpass',ftype='ellip')
+#
+# yiir = sig.lfilter(b,a,reference)
+
+
+
+y = sig.lfilter(h,1,reference)
+x = np.arange(y.size) / Fs
+plt.plot(x,reference)
+plt.plot(x,y)
+plt.legend(['Unfiltered', 'Filtered'])
 plt.show()
+plt.savefig('filtering of reference with fir filter')
 
-signalBack = reference
+y = y/normalizationFactor
+y = np.int16(y)
 
-wav_file = wave.open('found_in_reference.wav', "w")
-# wav params
-nchannels = 1
-sampwidth = 2
-nframes = signalBack.size
-comptype = "NONE"
-compname = "not compressed"
+wf.write('filteredReference.wav', Fs, y)
 
-wav_file.setparams((nchannels, sampwidth, Fs, nframes, comptype, compname))
-
-for sample in signalBack:
-    wav_file.writeframes(struct.pack('h', int(sample)))
-
-wav_file.close()
 
 print('Boom')
