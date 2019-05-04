@@ -4,18 +4,15 @@ import scipy.io.wavfile as wf
 import scipy.signal as sig
 from scipy.fftpack import fft
 
+NORMALIZATION_FACTOR = 2 ** -15
+
 
 def find_section_in_reference(ref_samples_file_name, section_file_name, graphs_dir, audio_output_dir):
     print('Joytunes exercise Uri Masheu')
     # add sounddevice later and use the commmand sd.play(data,Fs)
-    normalization_factor = 2 ** -15
-    frequency, reference = wf.read(ref_samples_file_name)
-    reference = np.double(reference) * normalization_factor
-    reference = reference[0:reference.size - 1]
-
-    frequency, section = wf.read(section_file_name)
-    section = np.double(section) * normalization_factor
-    section = section[0:section.size - 1]
+    frequency, reference = load_wave_file(ref_samples_file_name)
+    frequency, section = load_wave_file(section_file_name)
+    # todo: if frequency of both is not equal, raise error
 
     # todo: rename h to something programmers understand :)
     h = sig.firwin(255, 0.1, pass_zero=False)
@@ -47,7 +44,7 @@ def find_section_in_reference(ref_samples_file_name, section_file_name, graphs_d
     plt.legend(['Unfiltered', 'Filtered'])
     # plt.show()
     plt.savefig(graphs_dir + 'fft filtering of reference with fir filter')
-    y /= normalization_factor
+    y /= NORMALIZATION_FACTOR
     y = np.int16(y)
 
     print('Correlating signal with filtered reference...')
@@ -69,3 +66,10 @@ def find_section_in_reference(ref_samples_file_name, section_file_name, graphs_d
     wf.write(audio_output_dir + 'section2InReference.wav', frequency, section_in_reference)
     wf.write(audio_output_dir + 'filteredReference.wav', frequency, y)
     print('Done! :)')
+
+
+def load_wave_file(ref_samples_file_name):
+    frequency, reference = wf.read(ref_samples_file_name)
+    reference = np.double(reference) * NORMALIZATION_FACTOR
+    reference = reference[0:reference.size - 1]
+    return frequency, reference
