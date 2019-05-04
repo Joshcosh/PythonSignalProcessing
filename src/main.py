@@ -9,5 +9,6 @@ def main():
 
     find_section_in_reference(ref_samples_file_name, section_file_name, graphs_dir, audio_output_dir)
 
+
 if __name__ == '__main__':
     main()
