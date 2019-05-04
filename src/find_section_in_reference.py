@@ -14,21 +14,10 @@ def find_section_in_reference(ref_samples_file_name, section_file_name, graphs_d
     frequency, section = load_wave_file(section_file_name)
     # todo: if frequency of both is not equal, raise error
 
-    # todo: rename h to something programmers understand :)
-    h = sig.firwin(255, 0.1, pass_zero=False)
-    # todo: rename H to something programmers understand :)
-    # todo: rename f
-    f, H = sig.freqz(h, 1, 1000, fs=16000)
-    plt.plot(f, 20 * np.log10(np.abs(H)))
-    # todo: rename y
-    y = sig.lfilter(h, 1, reference)
-    # todo: rename x
-    x = np.arange(y.size) / frequency
-    plt.plot(x, reference)
-    plt.plot(x, y)
-    plt.legend(['Unfiltered', 'Filtered'])
-    # plt.show()
-    plt.savefig(graphs_dir + 'filtering of reference with fir filter')
+    y = filter(reference)
+
+    plot_original_and_filtered(frequency, graphs_dir, reference, y)
+
     reference_fft_abs = np.abs(fft(reference))
     print('Computing fft...')
     reference_fft_abs = reference_fft_abs[0:np.int(reference_fft_abs.size / 2)]
@@ -66,6 +55,28 @@ def find_section_in_reference(ref_samples_file_name, section_file_name, graphs_d
     wf.write(audio_output_dir + 'section2InReference.wav', frequency, section_in_reference)
     wf.write(audio_output_dir + 'filteredReference.wav', frequency, y)
     print('Done! :)')
+
+
+def plot_original_and_filtered(frequency, graphs_dir, reference, y):
+    # todo: rename x
+    x = np.arange(y.size) / frequency
+    plt.plot(x, reference)
+    plt.plot(x, y)
+    plt.legend(['Unfiltered', 'Filtered'])
+    # plt.show()
+    plt.savefig(graphs_dir + 'filtering of reference with fir filter')
+
+
+def filter(reference):
+    # todo: rename h to something programmers understand :)
+    h = sig.firwin(255, 0.1, pass_zero=False)
+    # todo: rename H to something programmers understand :)
+    # todo: rename f
+    f, H = sig.freqz(h, 1, 1000, fs=16000)
+    plt.plot(f, 20 * np.log10(np.abs(H)))
+    # todo: rename y
+    y = sig.lfilter(h, 1, reference)
+    return y
 
 
 def load_wave_file(ref_samples_file_name):
