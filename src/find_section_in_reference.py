@@ -10,6 +10,7 @@ NORMALIZATION_FACTOR = 2 ** -15
 def find_section_in_reference(ref_samples_file_name, section_file_name, graphs_dir, audio_output_dir):
     print('Joytunes exercise Uri Masheu')
     # add sounddevice later and use the commmand sd.play(data,Fs)
+
     frequency, reference = load_wave_file(ref_samples_file_name)
     frequency, section = load_wave_file(section_file_name)
     # todo: if frequency of both is not equal, raise error
@@ -24,16 +25,26 @@ def find_section_in_reference(ref_samples_file_name, section_file_name, graphs_d
 
     section_in_reference = correlate_signal_with_reference(frequency, reference, section, y)
 
+    plot_section_and_found_interval(graphs_dir, section, section_in_reference)
+
+    save_outputs(audio_output_dir, frequency, section_in_reference, y)
+
+    print('Done! :)')
+
+
+def save_outputs(audio_output_dir, frequency, section_in_reference, y):
+    print('Saving outputs...')
+    wf.write(audio_output_dir + 'section2InReference.wav', frequency, section_in_reference)
+    wf.write(audio_output_dir + 'filteredReference.wav', frequency, y)
+
+
+def plot_section_and_found_interval(graphs_dir, section, section_in_reference):
     print('Plotting section and reference in time domain...')
     plt.plot(section_in_reference)
     plt.plot(section)
     plt.legend(['sectionInReference', 'section'])
     # plt.show()
     plt.savefig(graphs_dir + 'section found comparison')
-    print('Saving outputs...')
-    wf.write(audio_output_dir + 'section2InReference.wav', frequency, section_in_reference)
-    wf.write(audio_output_dir + 'filteredReference.wav', frequency, y)
-    print('Done! :)')
 
 
 def correlate_signal_with_reference(frequency, reference, section, y):
