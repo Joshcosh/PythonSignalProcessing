@@ -8,7 +8,7 @@ NORMALIZATION_FACTOR = 2 ** -15
 
 
 def find_section_in_reference(ref_samples_file_name, section_file_name, graphs_dir, audio_output_dir):
-    print('Joytunes exercise Uri Shilo')
+    print('Joytunes exercise Uri')
     # add sounddevice later and use the commmand sd.play(data,Fs)
 
     frequency, reference = load_wave_file(ref_samples_file_name)
