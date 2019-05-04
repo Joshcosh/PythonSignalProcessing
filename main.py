@@ -1,17 +1,15 @@
-import numpy as np
 import matplotlib.pyplot as plt
-import scipy.signal as sig
-from scipy.fftpack import fft, ifft
+import numpy as np
 import scipy.io.wavfile as wf
-import wave
-import struct
-#import sounddevice as sd
+import scipy.signal as sig
+from scipy.fftpack import fft
 
 # add sounddevice later and use the commmand sd.play(data,Fs)
 
 normalizationFactor = 2 ** -15
 
 Fs, reference = wf.read('./audio/ref_samples.wav')
+
 
 reference = np.double(reference) * normalizationFactor
 reference = reference[0:reference.size - 1]
@@ -47,6 +45,7 @@ x = np.arange(0, 8000, step)
 # plt.legend(['Unfiltered', 'Filtered'])
 # plt.show()
 # plt.savefig('./graphs/fft filtering of reference with fir filter')
+
 
 # y = y/normalizationFactor
 # y = np.int16(y)
