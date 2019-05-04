@@ -21,7 +21,10 @@ def find_section_in_reference(ref_samples_file_name, section_file_name, graphs_d
 
     reference_fft_abs, x, y_fft_abs = compute_fft(frequency, reference, y)
 
-    y = plot_original_and_filtered_fft(graphs_dir, reference_fft_abs, x, y, y_fft_abs)
+    plot_original_and_filtered_fft(graphs_dir, reference_fft_abs, x, y, y_fft_abs)
+
+    # todo: Think if this makes sense here, or should be at the end?
+    y = normalize(y)
 
     section_in_reference = correlate_signal_with_reference(frequency, reference, section, y)
 
@@ -30,6 +33,12 @@ def find_section_in_reference(ref_samples_file_name, section_file_name, graphs_d
     save_outputs(audio_output_dir, frequency, section_in_reference, y)
 
     print('Done! :)')
+
+
+def normalize(y):
+    y /= NORMALIZATION_FACTOR
+    y = np.int16(y)
+    return y
 
 
 def save_outputs(audio_output_dir, frequency, section_in_reference, y):
@@ -68,9 +77,6 @@ def plot_original_and_filtered_fft(graphs_dir, reference_fft_abs, x, y, y_fft_ab
     plt.legend(['Unfiltered', 'Filtered'])
     # plt.show()
     plt.savefig(graphs_dir + 'fft filtering of reference with fir filter')
-    y /= NORMALIZATION_FACTOR
-    y = np.int16(y)
-    return y
 
 
 def compute_fft(frequency, reference, y):
