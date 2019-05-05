@@ -2,7 +2,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy.io.wavfile as wf
 import scipy.signal as sig
-from scipy.fftpack import fft
 
 NORMALIZATION_FACTOR = 2 ** -15
 
@@ -52,9 +51,12 @@ def plot_original_and_filtered(frequency, graphs_dir, reference, y):
 
 
 def filter(reference, plot_name):
+    '''
+    Using a FIR filter to create output without a phase delay
+    '''
     h = sig.firwin(255, 0.1, pass_zero=False)
-    f, H = sig.freqz(h, 1, 1000, fs=16000)
-    plt.plot(f, 20 * np.log10(np.abs(H)))
+    f, freq_response = sig.freqz(h, 1, 1000, fs=16000)
+    plt.plot(f, 20 * np.log10(np.abs(freq_response)))
     plt.title('FIR High Pass Filter')
     plt.savefig(plot_name)
     plt.close()

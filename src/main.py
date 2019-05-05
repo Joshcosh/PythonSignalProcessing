@@ -3,6 +3,7 @@ import numpy as np
 import os
 import datetime
 
+
 def main():
     print('~~~ Joytunes exercise by Uri Shilo ~~~')
     audio_dir = '../audio/'
@@ -39,7 +40,7 @@ def main():
             audio_search.correlate_signal_with_reference(reference_filtered, section)
         print('Search done...')
 
-        audio_search.save_outputs(audio_output_dir + section_file_name, frequency, section)
+        audio_search.save_outputs(audio_output_dir + section_file_name + '.wav', frequency, section)
 
         print('Creating plots...')
         audio_search.plot_section_and_found_interval\
