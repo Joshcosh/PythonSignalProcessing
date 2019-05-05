@@ -1,7 +1,7 @@
 import filecmp
 from unittest import TestCase
 
-from find_section_in_reference import find_section_in_reference
+from audio_search import find_section_in_reference
 
 
 class TestFindSectionInReference(TestCase):

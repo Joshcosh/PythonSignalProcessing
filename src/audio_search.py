@@ -6,45 +6,15 @@ from scipy.fftpack import fft
 
 NORMALIZATION_FACTOR = 2 ** -15
 
-
-def find_section_in_reference(ref_samples_file_name, section_file_name, graphs_dir, audio_output_dir):
-    print('Joytunes exercise Uri Shilo')
-    # add sounddevice later and use the commmand sd.play(data,Fs)
-
-    frequency, reference = load_wave_file(ref_samples_file_name)
-    frequency, section = load_wave_file(section_file_name)
-    # todo: if frequency of both is not equal, raise error
-
-    y = filter(reference)
-
-    plot_original_and_filtered(frequency, graphs_dir, reference, y)
-
-    reference_fft_abs, x, y_fft_abs = compute_fft(frequency, reference, y)
-
-    plot_original_and_filtered_fft(graphs_dir, reference_fft_abs, x, y, y_fft_abs)
-
-    # todo: Think if this makes sense here, or should be at the end?
-    y = normalize(y)
-
-    section_in_reference = correlate_signal_with_reference(frequency, reference, section, y)
-
-    plot_section_and_found_interval(graphs_dir, section, section_in_reference)
-
-    save_outputs(audio_output_dir, frequency, section_in_reference, y)
-
-    print('Done! :)')
-
-
 def normalize(y):
     y /= NORMALIZATION_FACTOR
     y = np.int16(y)
     return y
 
 
-def save_outputs(audio_output_dir, frequency, section_in_reference, y):
-    print('Saving outputs...')
-    wf.write(audio_output_dir + 'section2InReference.wav', frequency, section_in_reference)
-    wf.write(audio_output_dir + 'filteredReference.wav', frequency, y)
+def save_outputs(audio_output_file, frequency, section):
+    print('Saving output...')
+    wf.write(audio_output_file, frequency, section)
 
 
 def plot_section_and_found_interval(graphs_dir, section, section_in_reference):
@@ -56,17 +26,15 @@ def plot_section_and_found_interval(graphs_dir, section, section_in_reference):
     plt.savefig(graphs_dir + 'section found comparison')
 
 
-def correlate_signal_with_reference(frequency, reference, section, y):
+def correlate_signal_with_reference(reference, section):
     print('Correlating signal with filtered reference...')
     # This runs on every section 1..6
-    highest_correlation_index = np.argmax(np.correlate(y, section))
+    highest_correlation_index = np.argmax(np.correlate(reference, section))
     # todo: instead of minute and second, use one variable of type Duration
-    highest_correlation_minute = np.floor((highest_correlation_index / np.double(frequency)) / 60.0)
-    highest_correlation_second = (highest_correlation_index / np.double(frequency)) % 60.0
     start_index = highest_correlation_index
     end_index = start_index + section.size
-    section_in_reference = reference[start_index:end_index]
-    return section_in_reference
+
+    return start_index, end_index
 
 
 def plot_original_and_filtered_fft(graphs_dir, reference_fft_abs, x, y, y_fft_abs):
